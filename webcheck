@@ -1,0 +1,36 @@
+// Get from spreadsheet spreadsheet_urllist_id' sheet "URLs01", and get data from each URL and calculate Response time, and record to the sheet.
+function webCheck() {
+  // WebCheckURLs
+  var spreadsheet_urllist_id = '{{ YourSpreadSheet }}';
+  var spreadsheet = SpreadsheetApp.openById(spreadsheet_urllist_id);
+  var sheet = spreadsheet.getSheetByName('URLs01');
+
+  i=1;
+  max_stopper=100;
+  do{
+    var range = sheet.getRange(i,1);
+    if(range.getValue()==""){
+      break;
+    }
+    var url=range.getValue();
+    Logger.log(url);
+
+    var options = {
+        'method': "GET",
+        'contentType': 'text/html'
+    };
+
+    var bef = new Date();
+    var response = UrlFetchApp.fetch(url, options);
+    var aft  = new Date();
+    var response_time = aft-bef;
+
+    if( response != null ){
+      range = sheet.getRange(i,2);
+      range.setValue(response.getResponseCode());
+      range = sheet.getRange(i,3);
+      range.setValue(response_time);
+    }
+    i++;
+  }while(i<=max_stopper);
+}
